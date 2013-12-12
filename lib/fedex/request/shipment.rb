@@ -45,6 +45,7 @@ module Fedex
           add_recipient(xml)
           add_shipping_charges_payment(xml)
           add_special_services(xml) if @shipping_options[:return_reason]
+          add_delivery_instructions(xml)
           add_customs_clearance(xml) if @customs_clearance
           add_custom_components(xml)
           xml.RateRequestTypes "ACCOUNT"
@@ -76,6 +77,12 @@ module Fedex
             }
           }
         }
+      end
+
+      def add_delivery_instructions(xml)
+        if @shipping_options[:delivery_instructions] and service_type =~ /GROUND_HOME_DELIVERY|FREIGHT/
+          xml.DeliveryInstructions @shipping_options[:delivery_instructions]
+        end
       end
 
       # Callback used after a failed shipment response.
